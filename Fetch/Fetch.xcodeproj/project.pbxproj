@@ -13,7 +13,11 @@
 		6B68EFDF2339080500E9C29D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B68EFDD2339080500E9C29D /* Main.storyboard */; };
 		6B68EFE12339080600E9C29D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B68EFE02339080600E9C29D /* Assets.xcassets */; };
 		6B68EFE42339080600E9C29D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6B68EFE22339080600E9C29D /* LaunchScreen.storyboard */; };
-		6B68EFEC2339085B00E9C29D /* Flickr.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B68EFEB2339085B00E9C29D /* Flickr.plist */; };
+		6B68EFEC2339085B00E9C29D /* ApiKeys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6B68EFEB2339085B00E9C29D /* ApiKeys.plist */; };
+		6B68EFEF23390B3400E9C29D /* APIIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68EFEE23390B3400E9C29D /* APIIHelper.swift */; };
+		6B68EFF123391C2500E9C29D /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68EFF023391C2500E9C29D /* APIManager.swift */; };
+		6B68EFF42339270A00E9C29D /* FlickrPhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68EFF32339270A00E9C29D /* FlickrPhoto.swift */; };
+		6B68EFF62339297C00E9C29D /* FlickrPhotoPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B68EFF52339297C00E9C29D /* FlickrPhotoPage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +29,11 @@
 		6B68EFE02339080600E9C29D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6B68EFE32339080600E9C29D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6B68EFE52339080600E9C29D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6B68EFEB2339085B00E9C29D /* Flickr.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Flickr.plist; sourceTree = "<group>"; };
+		6B68EFEB2339085B00E9C29D /* ApiKeys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = ApiKeys.plist; sourceTree = "<group>"; };
+		6B68EFEE23390B3400E9C29D /* APIIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIIHelper.swift; sourceTree = "<group>"; };
+		6B68EFF023391C2500E9C29D /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		6B68EFF32339270A00E9C29D /* FlickrPhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrPhoto.swift; sourceTree = "<group>"; };
+		6B68EFF52339297C00E9C29D /* FlickrPhotoPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickrPhotoPage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +66,8 @@
 		6B68EFD62339080500E9C29D /* Fetch */ = {
 			isa = PBXGroup;
 			children = (
+				6B68EFF223391C6F00E9C29D /* Models */,
+				6B68EFED23390B2100E9C29D /* Utilities */,
 				6B68EFD72339080500E9C29D /* AppDelegate.swift */,
 				6B68EFD92339080500E9C29D /* SceneDelegate.swift */,
 				6B68EFDB2339080500E9C29D /* ViewController.swift */,
@@ -65,9 +75,27 @@
 				6B68EFE02339080600E9C29D /* Assets.xcassets */,
 				6B68EFE22339080600E9C29D /* LaunchScreen.storyboard */,
 				6B68EFE52339080600E9C29D /* Info.plist */,
-				6B68EFEB2339085B00E9C29D /* Flickr.plist */,
+				6B68EFEB2339085B00E9C29D /* ApiKeys.plist */,
 			);
 			path = Fetch;
+			sourceTree = "<group>";
+		};
+		6B68EFED23390B2100E9C29D /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6B68EFEE23390B3400E9C29D /* APIIHelper.swift */,
+				6B68EFF023391C2500E9C29D /* APIManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		6B68EFF223391C6F00E9C29D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				6B68EFF32339270A00E9C29D /* FlickrPhoto.swift */,
+				6B68EFF52339297C00E9C29D /* FlickrPhotoPage.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -129,7 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B68EFE42339080600E9C29D /* LaunchScreen.storyboard in Resources */,
-				6B68EFEC2339085B00E9C29D /* Flickr.plist in Resources */,
+				6B68EFEC2339085B00E9C29D /* ApiKeys.plist in Resources */,
 				6B68EFE12339080600E9C29D /* Assets.xcassets in Resources */,
 				6B68EFDF2339080500E9C29D /* Main.storyboard in Resources */,
 			);
@@ -144,6 +172,10 @@
 			files = (
 				6B68EFDC2339080500E9C29D /* ViewController.swift in Sources */,
 				6B68EFD82339080500E9C29D /* AppDelegate.swift in Sources */,
+				6B68EFF42339270A00E9C29D /* FlickrPhoto.swift in Sources */,
+				6B68EFF123391C2500E9C29D /* APIManager.swift in Sources */,
+				6B68EFF62339297C00E9C29D /* FlickrPhotoPage.swift in Sources */,
+				6B68EFEF23390B3400E9C29D /* APIIHelper.swift in Sources */,
 				6B68EFDA2339080500E9C29D /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,6 +323,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XVE8Z4R3EE;
 				INFOPLIST_FILE = Fetch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -298,7 +331,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bearlon.Fetch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -309,6 +342,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XVE8Z4R3EE;
 				INFOPLIST_FILE = Fetch/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -316,7 +350,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.bearlon.Fetch;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

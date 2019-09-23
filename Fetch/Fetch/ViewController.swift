@@ -13,7 +13,24 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        let apiKey = APIHelper.APIKey
+        print("\(apiKey)")
+        
+        APIManager().fetch(FlickrPhotoPage.current) { print($0) }
     }
+
+
+}
+
+extension ViewController: UICollectionViewDataSource {
+//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+//        <#code#>
+//    }
+//
+//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+//        <#code#>
+//    }
 
 
 }
