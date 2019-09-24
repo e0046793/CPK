@@ -37,9 +37,11 @@ extension FlickrPhotoPage {
 
 extension FlickrPhotoPage {
     
-    static let current = Resource<FlickrPhotoPage>(url: url!, parseJSON: { json in
-        guard let response = json as? JSONDictionary,
-            let photos = response["photos"] as? JSONDictionary else { return nil }
-        return FlickrPhotoPage.init(photos)
+    static let firstPage = Resource<FlickrPhotoPage>(
+        apiName: FlickrAPI.RecentPhoto,
+        parseJSON: { json in
+            guard let response = json as? JSONDictionary,
+                let photos = response["photos"] as? JSONDictionary else { return nil }
+            return FlickrPhotoPage.init(photos)
     })
 }
