@@ -8,7 +8,22 @@
 
 import Foundation
 
-//let url = URL(string: "https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=075b9698c067e2d7451387ff6e8159c4&format=json&nojsoncallback=1")
+// MARK: - Alias
+
+typealias JSONDictionary = [String : AnyObject]
+typealias DictionaryParam = [String : String]
+
+
+// MARK: - HTTPURLResponse extension
+
+extension HTTPURLResponse {
+  var hasSuccessStatusCode: Bool {
+    return 200...299 ~= statusCode
+  }
+}
+
+
+// MARK: - Resorce
 
 struct Resource<A> {
     let url: URL
@@ -17,8 +32,8 @@ struct Resource<A> {
 
 extension Resource {
    
-    init(apiName: FlickrAPI, parseJSON: @escaping (Any) -> A?) {
-        self.url = APIHelper.composeURL(by: apiName)
+    init(apiName: FlickrAPI, params: DictionaryParam! = nil, parseJSON: @escaping (Any) -> A?) {
+        self.url = APIHelper.composeURL(by: apiName, params: params)
         self.parse = { data in
             let json = try? JSONSerialization.jsonObject(with: data, options: [])
             return json.flatMap(parseJSON)
@@ -26,15 +41,13 @@ extension Resource {
     }
 }
 
-typealias JSONDictionary = [String : AnyObject]
-
 public enum Result<A> {
     case success(A)
-    case error(Error)
+    case error(WebserviceError)
 }
 
 extension Result {
-    public init(_ value: A?, or error: Error) {
+    public init(_ value: A?, or error: WebserviceError) {
         if let value = value {
             self = .success(value)
         } else {
@@ -50,8 +63,21 @@ extension Result {
 
 
 public enum WebserviceError: Error {
-    case other
+    case network
+    case decoding
+    
+    var reason: String {
+      switch self {
+      case .network:
+        return NSLocalizedString("An error occurred while fetching data", comment: "")
+      case .decoding:
+        return NSLocalizedString("An error occurred while decoding data", comment: "")
+      }
+    }
 }
+
+
+// MARK: - APIManager
 
 final class APIManager {
     
@@ -59,9 +85,16 @@ final class APIManager {
     /// - Parameter resource: FlickPhotoPage object
     /// - Parameter completion: completion handler
     func getRecentPhotos<A>(_ resource: Resource<A>, completion: @escaping (Result<A>) -> ()) {
-        URLSession.shared.dataTask(with: resource.url) { (data, _, _) in
+        URLSession.shared.dataTask(with: resource.url) { (data, response, error) in
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                httpResponse.hasSuccessStatusCode else {
+                    completion(Result.error(WebserviceError.network))
+                    return
+            }
+            
             let parsed = data.flatMap(resource.parse)
-            let result = Result(parsed, or: WebserviceError.other)
+            let result = Result(parsed, or: WebserviceError.decoding)
             DispatchQueue.main.async { completion(result) }
         }.resume()
     }

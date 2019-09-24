@@ -17,10 +17,22 @@ class ViewController: UIViewController {
     // MARK: - Properties
     private enum Constant {
         static let ViewName = NSLocalizedString("Flickr", comment: "")
-        static let CellID = "cellIdentifier"
     }
     
-    private var noOfPhoto: Int = 0
+    fileprivate lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action:
+                     #selector(ViewController.handleRefresh(_:)),
+                                 for: UIControl.Event.valueChanged)
+        return refreshControl
+    }()
+    
+    private var viewModel: PageViewModel! {
+        didSet {
+            guard nil != viewModel else { return }
+            collectionView.reloadData()
+        }
+    }
     
     
     // MARK: - Life cycle methods
@@ -28,7 +40,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = Constant.ViewName
-        load(resource: FlickrPhotoPage.firstPage)
+        
+        setupView()
+        
+        viewModel = PageViewModel(request: FlickrPhotoPage.firstPage, delegate: self)
+        spinner.startAnimating()
+        viewModel.fetchPhotos()
     }
 
 
@@ -37,22 +54,68 @@ class ViewController: UIViewController {
 extension ViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return noOfPhoto
+        return viewModel.totalCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constant.CellID, for: indexPath)
-        cell.backgroundColor = .white
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: FlickrCollectionViewCell.cellIdentifier,
+            for: indexPath) as! FlickrCollectionViewCell
+       
+        if isLoadingCell(for: indexPath) {
+          cell.configure(with: .none)
+        } else {
+          cell.configure(with: viewModel.photo(at: indexPath.row))
+        }
         return cell
     }
-
 }
 
-extension ViewController: Loading {
+extension ViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        if indexPaths.contains(where: isLoadingCell) {
+            viewModel.fetchPhotos()
+        }
+    }
+}
+
+extension ViewController: PageViewModelDelegate {
+    func onFetchCompleted(with newIndexPathsToReload: [IndexPath]?) {
+        // 1
+        guard let newIndexPathsToReload = newIndexPathsToReload else {
+            spinner.stopAnimating()
+            collectionView.reloadData()
+            return
+        }
+        // 2
+        let indexPathsToReload = visibleIndexPathsToReload(intersecting: newIndexPathsToReload)
+        collectionView.reloadItems(at: indexPathsToReload)
+    }
     
-    func configure(_ value: FlickrPhotoPage) {
-        self.noOfPhoto = value.photos.count
-        collectionView.reloadData()
+    func onFetchFailed(with reason: String) {
+        spinner.stopAnimating()
+        print(#function)
+    }
+}
+
+fileprivate extension ViewController {
+    
+    func setupView() {
+        collectionView.addSubview(self.refreshControl)
+    }
+    
+    func isLoadingCell(for indexPath: IndexPath) -> Bool {
+        return indexPath.row >= viewModel.currentCount
+    }
+    
+    func visibleIndexPathsToReload(intersecting indexPaths: [IndexPath]) -> [IndexPath] {
+        let indexPathsForVisibleItems = collectionView.indexPathsForVisibleItems
+        let indexPathsIntersection = Set(indexPathsForVisibleItems).intersection(indexPaths)
+        return Array(indexPathsIntersection)
+    }
+    
+    @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
+        refreshControl.endRefreshing()
     }
 }
 

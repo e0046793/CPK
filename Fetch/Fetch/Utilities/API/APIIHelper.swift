@@ -37,6 +37,7 @@ final class APIHelper {
     
     enum Param {
         static let method         = "method"
+        static let page           = "page"
         static let apiKey         = "api_key"
         static let format         = "format"
         static let nojsoncallback = "nojsoncallback"
@@ -60,11 +61,19 @@ final class APIHelper {
 
 extension APIHelper {
     
-    static func composeURL(by name: FlickrAPI) -> URL {
+    static func composeURL(by name: FlickrAPI, params: DictionaryParam! = nil) -> URL {
         var urlComponents = APIHelper.baseURL
-        let appendMethod: (String) -> URLQueryItem = {
-            return URLQueryItem(name: APIHelper.Param.method, value: $0)
+        let appendMethod: (String) -> Void = {
+            urlComponents.queryItems?.append(URLQueryItem(name: APIHelper.Param.method, value: $0))
         }
+        let appendParams: (DictionaryParam?) -> Void = { input in
+            guard let dictionary = input else { return }
+            let params = dictionary.compactMap { (key, value) -> URLQueryItem in
+                return URLQueryItem(name: key, value: value as String)
+            }
+            urlComponents.queryItems?.append(contentsOf: params)
+        }
+        
         
         if nil == urlComponents.queryItems {
             urlComponents.queryItems = Array<URLQueryItem>()
@@ -72,7 +81,8 @@ extension APIHelper {
         
         switch name {
         case .RecentPhoto:
-            urlComponents.queryItems?.append(appendMethod(APIHelper.Constant.Method.GetRecend))
+            appendMethod(APIHelper.Constant.Method.GetRecend)
+            appendParams(params)
         }
         
         let defaultParams: [URLQueryItem] = [
@@ -85,3 +95,4 @@ extension APIHelper {
         return urlComponents.url!
     }
 }
+
