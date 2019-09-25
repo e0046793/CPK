@@ -36,10 +36,11 @@ class ViewController: UIViewController {
     
     
     // MARK: - Life cycle methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = Constant.Title
+        
+        setupView()
         
         viewModel = PageViewModel(request: FlickrPhotoPage.firstPage, delegate: self)
         spinner.startAnimating()
@@ -50,7 +51,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UICollectionViewDataSource {
-    
+    // MARK: - UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.totalCount
     }
@@ -72,6 +73,7 @@ extension ViewController: UICollectionViewDataSource {
 }
 
 extension ViewController: UICollectionViewDataSourcePrefetching {
+    // MARK: - UICollectionViewDataSourcePrefetching
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         if indexPaths.contains(where: isLoadingCell) {
             viewModel.fetchPhotos()
@@ -80,6 +82,7 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
 }
 
 extension ViewController: PageViewModelDelegate {
+    // MARK: - PageViewModelDelegate
     func onFetchCompleted(with newIndexPathsToReload: [IndexPath]?) {
         // 1
         guard let newIndexPathsToReload = newIndexPathsToReload else {
@@ -99,7 +102,7 @@ extension ViewController: PageViewModelDelegate {
 }
 
 fileprivate extension ViewController {
-    
+    // MARK: - Private methods 
     func setupView() {
         collectionView.refreshControl = self.refreshControl
     }
@@ -115,6 +118,7 @@ fileprivate extension ViewController {
     }
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
+        viewModel.refresh()
         refreshControl.endRefreshing()
     }
 }

@@ -22,8 +22,8 @@ final class PageViewModel {
     private var isFetchInProgress = false
     private let cache = NSCache<NSString, UIImage>()
     
-    let client = APIManager()
-    let request: Resource<FlickrPhotoPage>
+    private let client = APIManager()
+    private let request: Resource<FlickrPhotoPage>
     
     init(request: Resource<FlickrPhotoPage>, delegate: PageViewModelDelegate) {
         self.request = request
@@ -40,6 +40,42 @@ final class PageViewModel {
     
     func photo(at index: Int) -> FlickrPhoto {
         return photos[index]
+    }
+    
+    func refresh() {
+        // 1
+        guard !isFetchInProgress else { return }
+        
+        // 2
+        isFetchInProgress = true
+        
+        client.getRequest(FlickrPhotoPage.firstPage) { (result) in
+            switch result {
+            case .error(let error):
+                DispatchQueue.main.async {
+                    self.isFetchInProgress = false
+                    self.delegate?.onFetchFailed(with: error.reason)
+                }
+            case .success(let flickrPhotoPage):
+                DispatchQueue.main.async {
+                    // 1
+                    self.currentPage = flickrPhotoPage.page + 1
+                    self.isFetchInProgress = false
+                    // 2
+                    self.total = flickrPhotoPage.total
+                    if false == self.photos.isEmpty { self.photos.removeAll() }
+                    self.photos.append(contentsOf: flickrPhotoPage.photos)
+                    
+                    // 3
+                    if 1 < flickrPhotoPage.page {
+                        let indexPathsToReload = self.calculateIndexPathsToReload(from: flickrPhotoPage.photos)
+                        self.delegate?.onFetchCompleted(with: indexPathsToReload)
+                    } else {
+                        self.delegate?.onFetchCompleted(with: .none)
+                    }
+                }
+            }
+        }
     }
     
     func fetchPhotos() {
