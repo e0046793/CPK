@@ -6,7 +6,7 @@
 //  Copyright © 2019 Nhan Truong. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 protocol PageViewModelDelegate: class {
     func onFetchCompleted(with newIndexPathsToReload: [IndexPath]?)
@@ -20,6 +20,7 @@ final class PageViewModel {
     private var currentPage = 1
     private var total = 0
     private var isFetchInProgress = false
+    private let cache = NSCache<NSString, UIImage>()
     
     let client = APIManager()
     let request: Resource<FlickrPhotoPage>
@@ -76,10 +77,39 @@ final class PageViewModel {
         }
     }
     
-    private func calculateIndexPathsToReload(from newModerators: [FlickrPhoto]) -> [IndexPath] {
+    func loadPhoto(at index: Int, completion: @escaping (PhotoViewModel) -> ()) {
+        let model = photo(at: index)
+        
+        if let cachedImage = self.cache.object(forKey: model.id as NSString) {
+            let photoVM = PhotoViewModel(image: cachedImage)
+            completion(photoVM)
+        
+        } else {
+            let request = Resource<PhotoViewModel>(url: model.imageURL) { (data) -> PhotoViewModel? in
+                guard let image = UIImage(data: data) else { return nil }
+                self.cache.setObject(image, forKey: model.id as NSString)
+                return PhotoViewModel(image: image)
+            }
+            client.getPhoto(request) { result in
+                switch result {
+                case .error(let error):
+                    print(error.localizedDescription)
+                case .success(let photoViewModel):
+                    DispatchQueue.main.async {
+                        completion(photoViewModel)
+                    }
+                }
+            }
+        }
+    }
+    
+}
+
+private extension PageViewModel {
+    
+    func calculateIndexPathsToReload(from newModerators: [FlickrPhoto]) -> [IndexPath] {
         let startIndex = photos.count - newModerators.count
         let endIndex = startIndex + newModerators.count
         return (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
     }
-    
 }

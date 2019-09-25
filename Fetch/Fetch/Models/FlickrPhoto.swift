@@ -13,6 +13,14 @@ struct FlickrPhoto {
     let farm: Int
     let server: String
     let secret: String
+    
+    var imageURL: URL {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "farm\(self.farm).staticflickr.com"
+        urlComponents.path = "/\(self.server)/\(self.id)_\(self.secret)_m.jpg"
+        return urlComponents.url!
+    }
 }
 
 extension FlickrPhoto {

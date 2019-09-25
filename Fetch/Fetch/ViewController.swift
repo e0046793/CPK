@@ -61,9 +61,11 @@ extension ViewController: UICollectionViewDataSource {
             for: indexPath) as! FlickrCollectionViewCell
        
         if isLoadingCell(for: indexPath) {
-          cell.configure(with: .none)
+            cell.configure(with: .none)
         } else {
-          cell.configure(with: viewModel.photo(at: indexPath.row))
+            viewModel.loadPhoto(at: indexPath.row) {
+                cell.configure(with: $0)
+            }
         }
         return cell
     }

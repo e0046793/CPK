@@ -98,4 +98,19 @@ final class APIManager {
             DispatchQueue.main.async { completion(result) }
         }.resume()
     }
+    
+    func getPhoto<A>(_ resource: Resource<A>, completion: @escaping (Result<A>) -> ()) {
+        URLSession.shared.dataTask(with: resource.url){ (data, response, error) in
+            
+            guard let httpResponse = response as? HTTPURLResponse,
+                httpResponse.hasSuccessStatusCode else {
+                    completion(Result.error(WebserviceError.network))
+                    return
+            }
+            
+            let parsed = data.flatMap(resource.parse)
+            let result = Result(parsed, or: WebserviceError.decoding)
+            DispatchQueue.main.async { completion(result) }
+        }.resume()
+    }
 }

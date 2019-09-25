@@ -62,6 +62,7 @@
                                 </cells>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="Maa-ER-KaM"/>
+                                    <outlet property="prefetchDataSource" destination="BYZ-38-t0r" id="nfK-Cm-era"/>
                                 </connections>
                             </collectionView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="kjz-7v-rA9">

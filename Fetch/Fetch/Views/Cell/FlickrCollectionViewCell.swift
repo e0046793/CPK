@@ -13,8 +13,6 @@ class FlickrCollectionViewCell: UICollectionViewCell {
  
     @IBOutlet weak var imgViewThumbnail: UIImageView!
     
-    private let imageCache = NSCache<NSString, UIImage>()
-    
     override func awakeFromNib() {
         // Use a random background color.
         let redColor = CGFloat(arc4random_uniform(255)) / 255.0
@@ -28,27 +26,8 @@ class FlickrCollectionViewCell: UICollectionViewCell {
         imgViewThumbnail.image = nil
     }
     
-    func configure(with model: FlickrPhoto?) {
-        guard let model = model else {
-            return
-        }
-        let queue = DispatchQueue.init(label: "com.bearlon.fetchImage")
-        queue.async
-        {
-            if let imageFromCache = self.imageCache.object(forKey: model.id as NSString) {
-                DispatchQueue.main.sync { [unowned self] in
-                    self.imgViewThumbnail.image = imageFromCache
-                }
-            }
-            
-            else if let url =  URL(string: "https://farm\(model.farm).staticflickr.com/\(model.server)/\(model.id)_\(model.secret)_m.jpg"),
-                let imageData = try? Data(contentsOf: url) {
-                self.imageCache.setObject(UIImage(data: imageData)!, forKey: model.id as NSString)
-                
-                DispatchQueue.main.sync { [unowned self] in
-                    self.imgViewThumbnail.image = UIImage(data: imageData)
-                }
-            }
-        }
+    func configure(with model: PhotoViewModel!) {
+        guard let model = model else { return }
+        self.imgViewThumbnail.image = model.image
     }
 }
