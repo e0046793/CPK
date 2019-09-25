@@ -23,7 +23,7 @@ extension HTTPURLResponse {
 }
 
 
-// MARK: - Resorce
+// MARK: - Resource
 
 struct Resource<A> {
     let url: URL
@@ -40,6 +40,9 @@ extension Resource {
         }
     }
 }
+
+
+// MARK: - Result
 
 public enum Result<A> {
     case success(A)
@@ -61,6 +64,8 @@ extension Result {
     }
 }
 
+
+// MARK: - WerserviceError
 
 public enum WebserviceError: Error {
     case network
@@ -84,23 +89,8 @@ final class APIManager {
     /// Return recent photos
     /// - Parameter resource: FlickPhotoPage object
     /// - Parameter completion: completion handler
-    func getRecentPhotos<A>(_ resource: Resource<A>, completion: @escaping (Result<A>) -> ()) {
+    func getRequest<A>(_ resource: Resource<A>, completion: @escaping (Result<A>) -> ()) {
         URLSession.shared.dataTask(with: resource.url) { (data, response, error) in
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                httpResponse.hasSuccessStatusCode else {
-                    completion(Result.error(WebserviceError.network))
-                    return
-            }
-            
-            let parsed = data.flatMap(resource.parse)
-            let result = Result(parsed, or: WebserviceError.decoding)
-            DispatchQueue.main.async { completion(result) }
-        }.resume()
-    }
-    
-    func getPhoto<A>(_ resource: Resource<A>, completion: @escaping (Result<A>) -> ()) {
-        URLSession.shared.dataTask(with: resource.url){ (data, response, error) in
             
             guard let httpResponse = response as? HTTPURLResponse,
                 httpResponse.hasSuccessStatusCode else {

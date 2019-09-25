@@ -18,7 +18,7 @@ extension Loading where Self: UIViewController {
     
     func load(resource: Resource<ResourceType>) {
         spinner.startAnimating()
-        flickr.getRecentPhotos(resource) { [weak self] result in
+        flickr.getRequest(resource) { [weak self] result in
             self?.spinner.stopAnimating()
             guard let value = result.value else { return } // TODO loading error
             self?.configure(value)

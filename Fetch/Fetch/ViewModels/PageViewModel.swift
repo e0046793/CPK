@@ -49,7 +49,7 @@ final class PageViewModel {
         // 2
         isFetchInProgress = true
         
-        client.getRecentPhotos(FlickrPhotoPage.loadPage(currentPage)) { (result) in
+        client.getRequest(FlickrPhotoPage.loadPage(currentPage)) { (result) in
             switch result {
             case .error(let error):
                 DispatchQueue.main.async {
@@ -90,7 +90,7 @@ final class PageViewModel {
                 self.cache.setObject(image, forKey: model.id as NSString)
                 return PhotoViewModel(image: image)
             }
-            client.getPhoto(request) { result in
+            client.getRequest(request) { result in
                 switch result {
                 case .error(let error):
                     print(error.localizedDescription)
