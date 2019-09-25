@@ -43,73 +43,18 @@ final class PageViewModel {
     }
     
     func refresh() {
-        // 1
-        guard !isFetchInProgress else { return }
-        
-        // 2
-        isFetchInProgress = true
-        
-        client.getRequest(FlickrPhotoPage.firstPage) { (result) in
-            switch result {
-            case .error(let error):
-                DispatchQueue.main.async {
-                    self.isFetchInProgress = false
-                    self.delegate?.onFetchFailed(with: error.reason)
-                }
-            case .success(let flickrPhotoPage):
-                DispatchQueue.main.async {
-                    // 1
-                    self.currentPage = flickrPhotoPage.page + 1
-                    self.isFetchInProgress = false
-                    // 2
-                    self.total = flickrPhotoPage.total
-                    if false == self.photos.isEmpty { self.photos.removeAll() }
-                    self.photos.append(contentsOf: flickrPhotoPage.photos)
-                    
-                    // 3
-                    if 1 < flickrPhotoPage.page {
-                        let indexPathsToReload = self.calculateIndexPathsToReload(from: flickrPhotoPage.photos)
-                        self.delegate?.onFetchCompleted(with: indexPathsToReload)
-                    } else {
-                        self.delegate?.onFetchCompleted(with: .none)
-                    }
-                }
-            }
+        self.invokeWebservice(request: FlickrPhotoPage.firstPage) { flickrPhotoPage in
+            self.currentPage = flickrPhotoPage.page + 1
+            
+            if false == self.photos.isEmpty { self.photos.removeAll() }
+            self.photos.append(contentsOf: flickrPhotoPage.photos)
         }
     }
     
     func fetchPhotos() {
-        // 1
-        guard !isFetchInProgress else { return }
-        
-        // 2
-        isFetchInProgress = true
-        
-        client.getRequest(FlickrPhotoPage.loadPage(currentPage)) { (result) in
-            switch result {
-            case .error(let error):
-                DispatchQueue.main.async {
-                    self.isFetchInProgress = false
-                    self.delegate?.onFetchFailed(with: error.reason)
-                }
-            case .success(let flickrPhotoPage):
-                DispatchQueue.main.async {
-                    // 1
-                    self.currentPage += 1
-                    self.isFetchInProgress = false
-                    // 2
-                    self.total = flickrPhotoPage.total
-                    self.photos.append(contentsOf: flickrPhotoPage.photos)
-                    
-                    // 3
-                    if 1 < flickrPhotoPage.page {
-                        let indexPathsToReload = self.calculateIndexPathsToReload(from: flickrPhotoPage.photos)
-                        self.delegate?.onFetchCompleted(with: indexPathsToReload)
-                    } else {
-                        self.delegate?.onFetchCompleted(with: .none)
-                    }
-                }
-            }
+        self.invokeWebservice(request: FlickrPhotoPage.loadPage(currentPage)) { flickrPhotoPage in
+            self.currentPage += 1
+            self.photos.append(contentsOf: flickrPhotoPage.photos)
         }
     }
     
@@ -147,5 +92,36 @@ private extension PageViewModel {
         let startIndex = photos.count - newModerators.count
         let endIndex = startIndex + newModerators.count
         return (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
+    }
+    
+    func invokeWebservice(request: Resource<FlickrPhotoPage>, completion: @escaping (FlickrPhotoPage) -> Void) -> Void {
+        
+        guard !isFetchInProgress else { return }
+        
+        isFetchInProgress = true
+        
+        client.getRequest(FlickrPhotoPage.loadPage(currentPage)) { (result) in
+            switch result {
+            case .error(let error):
+                DispatchQueue.main.async {
+                    self.isFetchInProgress = false
+                    self.delegate?.onFetchFailed(with: error.reason)
+                }
+            case .success(let flickrPhotoPage):
+                DispatchQueue.main.async {
+                    self.isFetchInProgress = false
+                    self.total = flickrPhotoPage.total
+                   
+                    completion(flickrPhotoPage)
+
+                    if 1 < flickrPhotoPage.page {
+                        let indexPathsToReload = self.calculateIndexPathsToReload(from: flickrPhotoPage.photos)
+                        self.delegate?.onFetchCompleted(with: indexPathsToReload)
+                    } else {
+                        self.delegate?.onFetchCompleted(with: .none)
+                    }
+                }
+            }
+        }
     }
 }
