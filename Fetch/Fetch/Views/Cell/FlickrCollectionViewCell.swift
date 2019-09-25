@@ -15,9 +15,21 @@ class FlickrCollectionViewCell: UICollectionViewCell {
     
     private let imageCache = NSCache<NSString, UIImage>()
     
+    override func awakeFromNib() {
+        // Use a random background color.
+        let redColor = CGFloat(arc4random_uniform(255)) / 255.0
+        let greenColor = CGFloat(arc4random_uniform(255)) / 255.0
+        let blueColor = CGFloat(arc4random_uniform(255)) / 255.0
+        self.backgroundColor = UIColor(red: redColor, green: greenColor, blue: blueColor, alpha: 1.0)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imgViewThumbnail.image = nil
+    }
+    
     func configure(with model: FlickrPhoto?) {
         guard let model = model else {
-            self.imgViewThumbnail.backgroundColor = .white
             return
         }
         let queue = DispatchQueue.init(label: "com.bearlon.fetchImage")
@@ -29,7 +41,7 @@ class FlickrCollectionViewCell: UICollectionViewCell {
                 }
             }
             
-            else if let url =  URL(string: "https://farm\(model.farm).staticflickr.com/\(model.server)/\(model.id)_\(model.secret)_t.jpg"),
+            else if let url =  URL(string: "https://farm\(model.farm).staticflickr.com/\(model.server)/\(model.id)_\(model.secret)_m.jpg"),
                 let imageData = try? Data(contentsOf: url) {
                 self.imageCache.setObject(UIImage(data: imageData)!, forKey: model.id as NSString)
                 

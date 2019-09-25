@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     
     // MARK: - Properties
     private enum Constant {
-        static let ViewName = NSLocalizedString("Flickr", comment: "")
+        static let Title = NSLocalizedString("Flickr", comment: "")
     }
     
     fileprivate lazy var refreshControl: UIRefreshControl = {
@@ -39,9 +39,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = Constant.ViewName
-        
-        setupView()
+        self.title = Constant.Title
         
         viewModel = PageViewModel(request: FlickrPhotoPage.firstPage, delegate: self)
         spinner.startAnimating()
@@ -101,7 +99,7 @@ extension ViewController: PageViewModelDelegate {
 fileprivate extension ViewController {
     
     func setupView() {
-        collectionView.addSubview(self.refreshControl)
+        collectionView.refreshControl = self.refreshControl
     }
     
     func isLoadingCell(for indexPath: IndexPath) -> Bool {
