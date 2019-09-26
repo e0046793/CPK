@@ -23,11 +23,11 @@ The app does not require any dependencies.
 ```
 
 ### Features
-1. Home screen displays list of photos
-    1. Photos are arranged in a collection view with mosaic layout
-    2. Pull to refresh
-    3. Smooth scrolling 
-2. Detail screen displays full-size photo with its title
+1. __Home screen__ displays list of photos
+   - Photos are arranged in a collection view with mosaic layout
+   - Pull to refresh
+   - Smooth scrolling 
+2. __Detail screen__ displays full-size photo with its title
 
 ### Behind the scene
 - The app follows MVVM design pattern
@@ -44,3 +44,8 @@ The app does not require any dependencies.
 
 ### Author
 __Nhan Truong (Kyle)__ - Initial work
+
+### Reference
+1. [Objc.io](https://www.objc.io)
+2. [Raywenderlich](https://www.raywenderlich.com/)
+3. [WWDC](https://developer.apple.com/videos/design/)
