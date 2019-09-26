@@ -15,8 +15,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     // MARK: - Properties
-    private enum Constant {
-        static let Title = NSLocalizedString("Flickr", comment: "")
+    private enum TEXT {
+        static let Title      = "Flickr".localizedString
+        static let AlertTitle = "Warning".localizedString
+        static let OK         = "OK".localizedString
     }
     
     fileprivate lazy var refreshControl: UIRefreshControl = {
@@ -38,12 +40,15 @@ class ViewController: UIViewController {
     // MARK: - Life cycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = Constant.Title
+        self.title = TEXT.Title
         
         setupView()
         
-        viewModel = PageViewModel(request: FlickrPhotoPage.firstPage, delegate: self)
-        spinner.startAnimating()
+        viewModel = PageViewModel(
+            request: FlickrPhotoPage.firstPage,
+            delegate: self,
+            loadingDelegate: self
+        )
         viewModel.fetchPhotos()
     }
 
@@ -81,23 +86,31 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
     }
 }
 
+extension ViewController: UICollectionViewDelegate {
+    // MARK: - UICollectionViewDelegate
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // Dimiss the highlight
+        collectionView.deselectItem(at: indexPath, animated: false)
+    }
+}
+
 extension ViewController: PageViewModelDelegate {
     // MARK: - PageViewModelDelegate
     func onFetchCompleted(with newIndexPathsToReload: [IndexPath]?) {
-        // 1
+        
         guard let newIndexPathsToReload = newIndexPathsToReload else {
-            spinner.stopAnimating()
             collectionView.reloadData()
             return
         }
-        // 2
+        
         let indexPathsToReload = visibleIndexPathsToReload(intersecting: newIndexPathsToReload)
         collectionView.reloadItems(at: indexPathsToReload)
     }
     
     func onFetchFailed(with reason: String) {
-        spinner.stopAnimating()
-        print(#function)
+        let action = UIAlertAction(title: TEXT.OK, style: .default)
+        displayAlert(with: TEXT.AlertTitle , message: reason, actions: [action])
     }
 }
 
@@ -122,4 +135,6 @@ fileprivate extension ViewController {
         refreshControl.endRefreshing()
     }
 }
+
+extension ViewController: Loading, AlertDisplayer {}
 
