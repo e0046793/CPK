@@ -74,3 +74,62 @@ extension AlertDisplayer where Self: UIViewController {
     present(alertController, animated: true)
   }
 }
+
+
+// MARK: - LoadingWebserviceDelegate
+
+protocol LoadingWebservice: class {
+    func willInvokeService()
+    func didServiceResponse()
+}
+
+
+// MARK: - Loading
+
+protocol IndicatorLoading: LoadingWebservice {
+    var spinner: UIActivityIndicatorView! { get set }
+}
+
+extension IndicatorLoading where Self: UIViewController {
+    
+    func willInvokeService() {
+        spinner.startAnimating()
+    }
+    
+    func didServiceResponse() {
+        spinner.stopAnimating()
+    }
+}
+
+
+// MARK: - Enum Text
+
+enum TEXT {
+    static let Title      = "Flickr".localizedString
+    static let AlertTitle = "Warning".localizedString
+    static let OK         = "OK".localizedString
+}
+
+
+// MARK: - SegueHandlerType
+
+protocol SegueHandlerType {
+    associatedtype SegueIdentifier: RawRepresentable
+}
+
+extension SegueHandlerType where
+    Self: UIViewController,
+    SegueIdentifier.RawValue == String {
+    
+    func performSegue(segueIdentifier identifier: SegueIdentifier, sender: Any?) {
+        performSegue(withIdentifier: identifier.rawValue, sender: sender)
+    }
+    
+    func segueIdentifierForSegue(segue: UIStoryboardSegue) -> SegueIdentifier {
+        guard let identifier = segue.identifier,
+            let segueIdentifier = SegueIdentifier(rawValue: identifier) else {
+                fatalError("Invalid segue identifier \(String(describing: segue.identifier)).")
+        }
+        return segueIdentifier
+    }
+}

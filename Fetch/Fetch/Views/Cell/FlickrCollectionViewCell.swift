@@ -13,6 +13,8 @@ class FlickrCollectionViewCell: UICollectionViewCell {
  
     @IBOutlet weak var imgViewThumbnail: UIImageView!
     
+    private(set) var viewModel: PhotoViewModel?
+    
     override func awakeFromNib() {
         // Use a random background color.
         let redColor = CGFloat(arc4random_uniform(255)) / 255.0
@@ -28,6 +30,7 @@ class FlickrCollectionViewCell: UICollectionViewCell {
     
     func configure(with model: PhotoViewModel!) {
         guard let model = model else { return }
-        self.imgViewThumbnail.image = model.image
+        viewModel = model
+        self.imgViewThumbnail.image = model.thumbnailImage
     }
 }

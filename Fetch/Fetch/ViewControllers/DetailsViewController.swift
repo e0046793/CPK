@@ -10,21 +10,32 @@ import UIKit
 
 class DetailsViewController: UIViewController {
 
+    @IBOutlet weak var photoView: UIImageView!
+    @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
+    
+    var viewModel: PhotoViewModel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        lblTitle.text = viewModel.title
+        viewModel?.loadingDelegate = self
+        viewModel?.delegate = self
+        viewModel?.loadPhoto()
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
+
+extension DetailsViewController: PhotoViewModelDelegate {
+    // MARK: - PhotoViewModelDelegate
+    func onFetchCompleted(image: UIImage) {
+        self.photoView.image = image
+    }
+    
+    func onFetchFailed(with reason: String) {
+        let action = UIAlertAction(title: TEXT.OK, style: .default)
+        displayAlert(with: TEXT.AlertTitle , message: reason, actions: [action])
+    }
+}
+
+extension DetailsViewController: IndicatorLoading, AlertDisplayer {}

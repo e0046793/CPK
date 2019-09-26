@@ -15,19 +15,26 @@ protocol PageViewModelDelegate: class {
 
 final class PageViewModel {
     private weak var delegate: PageViewModelDelegate?
+    private weak var loadingDelegate: LoadingWebservice?
     
     private var photos: [FlickrPhoto] = []
     private var currentPage = 1
     private var total = 0
-    private var isFetchInProgress = false
+    private var isFetchInProgress = false {
+        didSet {
+            if true == isFetchInProgress { loadingDelegate?.willInvokeService() }
+            else { loadingDelegate?.didServiceResponse() }
+        }
+    }
     private let cache = NSCache<NSString, UIImage>()
     
     private let client = APIManager()
     private let request: Resource<FlickrPhotoPage>
     
-    init(request: Resource<FlickrPhotoPage>, delegate: PageViewModelDelegate) {
+    init(request: Resource<FlickrPhotoPage>, delegate: PageViewModelDelegate, loadingDelegate: LoadingWebservice? = nil) {
         self.request = request
         self.delegate = delegate
+        self.loadingDelegate = loadingDelegate
     }
     
     var totalCount: Int {
@@ -36,10 +43,6 @@ final class PageViewModel {
     
     var currentCount: Int {
         return photos.count
-    }
-    
-    func photo(at index: Int) -> FlickrPhoto {
-        return photos[index]
     }
     
     func refresh() {
@@ -62,14 +65,22 @@ final class PageViewModel {
         let model = photo(at: index)
         
         if let cachedImage = self.cache.object(forKey: model.id as NSString) {
-            let photoVM = PhotoViewModel(image: cachedImage)
+            let photoVM = PhotoViewModel(
+                thumbnailImage: cachedImage,
+                title: model.title,
+                url: model.originURL
+            )
             completion(photoVM)
         
         } else {
-            let request = Resource<PhotoViewModel>(url: model.imageURL) { (data) -> PhotoViewModel? in
+            let request = Resource<PhotoViewModel>(url: model.thumbnailURL) { (data) -> PhotoViewModel? in
                 guard let image = UIImage(data: data) else { return nil }
                 self.cache.setObject(image, forKey: model.id as NSString)
-                return PhotoViewModel(image: image)
+                return PhotoViewModel(
+                    thumbnailImage: image,
+                    title: model.title, url:
+                    model.originURL
+                )
             }
             client.getRequest(request) { result in
                 switch result {
@@ -87,6 +98,10 @@ final class PageViewModel {
 }
 
 private extension PageViewModel {
+    
+    func photo(at index: Int) -> FlickrPhoto {
+        return photos[index]
+    }
     
     func calculateIndexPathsToReload(from newModerators: [FlickrPhoto]) -> [IndexPath] {
         let startIndex = photos.count - newModerators.count

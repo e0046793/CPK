@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="z87-96-Zgz">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -62,6 +63,7 @@
                                 </cells>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="Maa-ER-KaM"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Lll-Z5-hIO"/>
                                     <outlet property="prefetchDataSource" destination="BYZ-38-t0r" id="nfK-Cm-era"/>
                                 </connections>
                             </collectionView>
@@ -84,11 +86,58 @@
                     <connections>
                         <outlet property="collectionView" destination="Jas-a4-Yun" id="aH9-WJ-fHq"/>
                         <outlet property="spinner" destination="kjz-7v-rA9" id="mPO-Ml-SP8"/>
+                        <segue destination="xse-Kc-zBo" kind="show" identifier="Details" id="ABN-ez-ONB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="139" y="139"/>
+        </scene>
+        <!--Details View Controller-->
+        <scene sceneID="8CV-57-oa3">
+            <objects>
+                <viewController id="xse-Kc-zBo" customClass="DetailsViewController" customModule="Fetch" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="oE0-hR-7Lt">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6eh-Su-gfO">
+                                <rect key="frame" x="0.0" y="44" width="320" height="524"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G7G-iK-tb2">
+                                <rect key="frame" x="20" y="527.5" width="42" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="uV2-kS-9ou">
+                                <rect key="frame" x="150" y="296" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="uV2-kS-9ou" firstAttribute="centerY" secondItem="6eh-Su-gfO" secondAttribute="centerY" id="Ez7-KH-VR5"/>
+                            <constraint firstItem="jgd-So-lN5" firstAttribute="bottom" secondItem="6eh-Su-gfO" secondAttribute="bottom" id="V0W-81-Iww"/>
+                            <constraint firstItem="uV2-kS-9ou" firstAttribute="centerX" secondItem="6eh-Su-gfO" secondAttribute="centerX" id="dnZ-2F-Gqi"/>
+                            <constraint firstItem="jgd-So-lN5" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="G7G-iK-tb2" secondAttribute="trailing" constant="20" id="f54-jT-TSa"/>
+                            <constraint firstItem="jgd-So-lN5" firstAttribute="trailing" secondItem="6eh-Su-gfO" secondAttribute="trailing" id="gBA-oL-nks"/>
+                            <constraint firstItem="6eh-Su-gfO" firstAttribute="leading" secondItem="jgd-So-lN5" secondAttribute="leading" id="icd-5J-hBB"/>
+                            <constraint firstItem="jgd-So-lN5" firstAttribute="bottom" secondItem="G7G-iK-tb2" secondAttribute="bottom" constant="20" id="kVu-RK-3tG"/>
+                            <constraint firstItem="G7G-iK-tb2" firstAttribute="leading" secondItem="jgd-So-lN5" secondAttribute="leading" constant="20" id="ttf-2M-K6u"/>
+                            <constraint firstItem="6eh-Su-gfO" firstAttribute="top" secondItem="jgd-So-lN5" secondAttribute="top" id="wQS-5R-LOq"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="jgd-So-lN5"/>
+                    </view>
+                    <navigationItem key="navigationItem" largeTitleDisplayMode="never" id="kqG-cV-uc7"/>
+                    <connections>
+                        <outlet property="lblTitle" destination="G7G-iK-tb2" id="U2B-MQ-GQw"/>
+                        <outlet property="photoView" destination="6eh-Su-gfO" id="7Vt-Yt-zhA"/>
+                        <outlet property="spinner" destination="uV2-kS-9ou" id="jJQ-pH-d58"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="08q-BE-Yxg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1254" y="138"/>
         </scene>
     </scenes>
 </document>

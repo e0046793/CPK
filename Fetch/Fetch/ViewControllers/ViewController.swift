@@ -15,10 +15,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     // MARK: - Properties
-    private enum TEXT {
-        static let Title      = "Flickr".localizedString
-        static let AlertTitle = "Warning".localizedString
-        static let OK         = "OK".localizedString
+
+    enum SegueIdentifier: String {
+        case Details = "Details"
     }
     
     fileprivate lazy var refreshControl: UIRefreshControl = {
@@ -36,6 +35,8 @@ class ViewController: UIViewController {
         }
     }
     
+    private var selectedPhotoViewModel: PhotoViewModel?
+    
     
     // MARK: - Life cycle methods
     override func viewDidLoad() {
@@ -52,6 +53,16 @@ class ViewController: UIViewController {
         viewModel.fetchPhotos()
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segueIdentifierForSegue(segue: segue) {
+        case .Details:
+            guard let destinationVC = segue.destination as? DetailsViewController,
+                let model = self.selectedPhotoViewModel else {
+                fatalError("Expected issue happend")
+            }
+            destinationVC.viewModel = model
+        }
+    }
 
 }
 
@@ -89,9 +100,10 @@ extension ViewController: UICollectionViewDataSourcePrefetching {
 extension ViewController: UICollectionViewDelegate {
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // Dimiss the highlight
-        collectionView.deselectItem(at: indexPath, animated: false)
+        guard let cell = collectionView.cellForItem(at: indexPath) as? FlickrCollectionViewCell,
+            let viewModel = cell.viewModel else { print(#function); return }
+        self.selectedPhotoViewModel = viewModel
+        performSegue(segueIdentifier: .Details, sender: nil)
     }
 }
 
@@ -136,5 +148,5 @@ fileprivate extension ViewController {
     }
 }
 
-extension ViewController: Loading, AlertDisplayer {}
+extension ViewController: IndicatorLoading, AlertDisplayer, SegueHandlerType {}
 
